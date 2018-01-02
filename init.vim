@@ -1,15 +1,4 @@
-" Plugins ==================== {{{
-call plug#begin( '~/.config/nvim/bundle')
-
-Plug 'rust-lang/rust.vim'
-Plug 'roxma/nvim-completion-manager'
-Plug 'racer-rust/vim-racer'
-Plug 'roxma/nvim-cm-racer'
-Plug 'joshdick/onedark.vim'
-Plug 'w0rp/ale'
-call plug#end()
-"}}}
-
+"
 " Vim initialization
 " ------------------
 
@@ -28,7 +17,33 @@ nnoremap ;        <Nop>
 xnoremap ;        <Nop>
 nnoremap m        <Nop>
 xnoremap m 	  <Nop>
+nmap <C-h> :bp<CR>
+nmap <C-l> :bn<CR>
+nmap <C-x> :bd<CR>
+nmap <C-n> :VimFilerExplorer<CR>
 
+" Plugins ==================== {{{
+call plug#begin( '~/.config/nvim/bundle')
+
+Plug 'rust-lang/rust.vim'
+Plug 'roxma/nvim-completion-manager'
+Plug 'racer-rust/vim-racer'
+Plug 'roxma/nvim-cm-racer'
+Plug 'joshdick/onedark.vim'
+Plug 'w0rp/ale'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'Raimondi/delimitMate'
+Plug 'majutsushi/tagbar'
+Plug 'airblade/vim-gitgutter'
+Plug 'tpope/vim-fugitive'
+Plug 'junegunn/fzf'
+Plug 'junegunn/fzf.vim'
+Plug 'thaerkh/vim-workspace'
+Plug 'Shougo/vimfiler.vim'
+Plug 'Shougo/unite.vim'
+call plug#end()
+"}}}
 
 " ================ General Config ==================== {{{
 "set termguicolors
@@ -116,9 +131,13 @@ set wildignore+=tmp/**
 set wildignore+=*.png,*.jpg,*.gif
 
 "Ale
-let g:ale_completion_enabled = 1
-
-
+let g:ale_linters = {'rust': ['cargo']}
+let g:ale_sign_column_always = 1
+let g:ale_sign_error = 'E'
+let g:ale_sign_warning = 'W'
+let g:airline#extensions#ale#enabled = 1
+let g:ale_open_list = 0
+let g:ale_set_loclist = 1
 " }}}
 " ================ Scrolling ======================== {{{
 
@@ -134,3 +153,101 @@ let g:bold_highlight_groups = ['Function', 'Statement', 'Todo', 'CursorLineNr', 
 let g:onedark_terminal_italics = 1                                              "Enable italic font
 highlight Normal ctermbg=NONE
 highlight nonText ctermbg=NONE
+
+" ================ Airline ========================== {{{
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#left_sep = ' '
+let g:airline#extensions#tabline#left_alt_sep = '|'
+let g:airline_theme='onedark'
+let g:airline#extensions#hunks#non_zero_only = 1
+let g:airline#extensions#tabline#fnamemod = ':t'
+
+" ================ Workspace ====================== {{{
+nnoremap <leader>s :ToggleWorkspace<CR>
+
+" ================ VimFiler ======================= {{{
+:let g:vimfiler_as_default_explorer = 1
+
+" ================ DelimitMate ==================== {{{
+let delimitMate_expand_cr = 1
+let delimitMate_expand_space=1
+augroup mydelimitMate
+  au!
+  au FileType markdown let b:delimitMate_nesting_quotes = ["`"]
+  au FileType tex let b:delimitMate_quotes = ""
+  au FileType tex let b:delimitMate_matchpairs = "(:),[:],{:},`:'"
+  au FileType python let b:delimitMate_nesting_quotes = ['"', "'"]
+  au FileType vim,html let b:delimitMate_matchpairs = "(:),[:],{:}"
+augroup END
+
+" ================= Tagbar ======================== {{{
+nmap <silent> <leader>b :TagbarToggle<CR>
+let g:tagbar_autofocus = 1
+let g:tagbar_autoclose = 1
+" Uncomment to open tagbar automatically whenever possible
+"autocmd BufEnter * nested :call tagbar#autoopen(0)
+"Rust ctags config
+let g:tagbar_type_rust = {
+    \ 'ctagstype' : 'rust',
+    \ 'kinds' : [
+        \'T:types,type definitions',
+        \'f:functions,function definitions',
+        \'g:enum,enumeration names',
+        \'s:structure names',
+        \'m:modules,module names',
+        \'c:consts,static constants',
+        \'t:traits',
+        \'i:impls,trait implementations',
+    \]
+    \}
+
+" ============== RUST ============================ {{{
+let g:rustfmt_autosave = 1
+let g:ftplugin_rust_source_path = $RUST_SRC_PATH
+
+" ============== FZF ============================= {{{
+"default command
+let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore .git -g ""'
+
+" This is the default extra key bindings
+let g:fzf_action = {
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
+
+" Default fzf layout
+" - down / up / left / right
+let g:fzf_layout = { 'down': '~40%' }
+command! -bang -nargs=? -complete=dir Files
+  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
+
+command! -bang -nargs=* Ag
+  \ call fzf#vim#ag(<q-args>,
+  \                 <bang>0 ? fzf#vim#with_preview('up:60%')
+ \                         : fzf#vim#with_preview('right:50%'),
+  \                 <bang>0)
+
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --color=always '.shellescape(<q-args>), 1,
+  \   <bang>0 ? fzf#vim#with_preview('up:60%')
+  \           : fzf#vim#with_preview('right:50%'),
+  \   <bang>0)
+"
+" Customize fzf colors to match your color scheme
+let g:fzf_colors =
+\ { 'fg':      ['fg', 'Normal'],
+  \ 'bg':      ['bg', 'Normal'],
+  \ 'hl':      ['fg', 'Comment'],
+  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+  \ 'hl+':     ['fg', 'Statement'],
+  \ 'info':    ['fg', 'PreProc'],
+  \ 'prompt':  ['fg', 'Conditional'],
+  \ 'pointer': ['fg', 'Exception'],
+  \ 'marker':  ['fg', 'Keyword'],
+  \ 'spinner': ['fg', 'Label'],
+  \ 'header':  ['fg', 'Comment'] }
+
+
+
