@@ -146,35 +146,25 @@ let g:ale_open_list = 1
 let g:ale_set_loclist = 1
 let g:ale_set_highlights = 1
 let g:ale_set_signs = 1
-"let g:neomake_open_list = 2
-"let g:neomake_highlight_lines = 1
-"call neomake#configure#automake('w')
-" let g:neomake_error_sign = {'text': '✖', 'texthl': 'NeomakeErrorSign'}
-"     let g:neomake_warning_sign = {
-"         \   'text': '⚠',
-"         \   'texthl': 'NeomakeWarningSign',
-"         \ }
-"     let g:neomake_message_sign = {
-"          \   'text': '➤',
-"          \   'texthl': 'NeomakeMessageSign',
-"          \ }
-"     let g:neomake_info_sign = {'text': 'ℹ', 'texthl': 'NeomakeInfoSign'}
 let g:LanguageClient_serverCommands = {
     \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
     \ 'javascript': ['javascript-typescript-stdio'],
     \ }
-let g:LanguageClient_selectionUI = 'location-list'
+let g:LanguageClient_selectionUI = 'fzf'
 let g:LanguageClient_diagnosticsList = 'Location'
+let g:LanguageClient_windowLogMessageLevel = "Info"
+let g:LanguageClient_loggingLevel = 'INFO'
+
 
 let g:LanguageClient_rootMarkers = {
         \ 'javascript': ['project.json'],
         \ 'rust': ['Cargo.toml'],
         \ }
 
-nnoremap <silent> K :call LanguageClient_textDocument_hover()<CR>
-nnoremap <silent> gd :call LanguageClient_textDocument_definition()<CR>
-nnoremap <silent> <F2> :call LanguageClient_textDocument_rename()<CR>
-nnoremap <silent> <F3> :call LanguageClient_statusLine()<CR>
+nnoremap <silent> <leader>doc :call LanguageClient_textDocument_hover()<CR>
+nnoremap <silent> <leader>gd :call LanguageClient_textDocument_definition()<CR>
+nnoremap <silent> <leader>rn  :call LanguageClient_textDocument_rename()<CR>
+nnoremap <silent> <leader>ref  :call LanguageClient_textDocument_references()<CR>
 " ================ Scrolling ======================== {{{
 
 set scrolloff=8                                                                 "Start scrolling when we're 8 lines away from margins
