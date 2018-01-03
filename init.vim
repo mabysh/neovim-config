@@ -133,8 +133,8 @@ set wildignore+=tmp/**
 set wildignore+=*.png,*.jpg,*.gif
 
 " ================ Ale =============================== {{{
-let g:ale_linters = {'rust': ['rls', 'cargo']}
-let g:ale_rust_cargo_use_check = 1 
+let g:ale_linters = {'rust': ['cargo']}
+let g:ale_rust_cargo_use_check = 1
 let g:ale_sign_column_always = 1
 let g:ale_sign_error = '✖'
 let g:ale_sign_warning = '⚠'
@@ -142,7 +142,7 @@ let g:ale_echo_msg_error_str = 'Error'
 let g:ale_echo_msg_format = '%s'
 let g:ale_echo_msg_warning_str = 'Warning'
 let g:airline#extensions#ale#enabled = 1
-let g:ale_open_list = 0
+let g:ale_open_list = 1
 let g:ale_set_loclist = 1
 let g:ale_set_highlights = 1
 let g:ale_set_signs = 1
@@ -163,8 +163,13 @@ let g:LanguageClient_serverCommands = {
     \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
     \ 'javascript': ['javascript-typescript-stdio'],
     \ }
-let g:LanguageClient_selectionUI = 'fzf'
+let g:LanguageClient_selectionUI = 'location-list'
 let g:LanguageClient_diagnosticsList = 'Location'
+
+let g:LanguageClient_rootMarkers = {
+        \ 'javascript': ['project.json'],
+        \ 'rust': ['Cargo.toml'],
+        \ }
 
 nnoremap <silent> K :call LanguageClient_textDocument_hover()<CR>
 nnoremap <silent> gd :call LanguageClient_textDocument_definition()<CR>
