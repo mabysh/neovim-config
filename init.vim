@@ -27,8 +27,8 @@ call plug#begin( '~/.config/nvim/bundle')
 
 Plug 'rust-lang/rust.vim'
 Plug 'roxma/nvim-completion-manager'
-Plug 'racer-rust/vim-racer'
-Plug 'roxma/nvim-cm-racer'
+"Plug 'racer-rust/vim-racer'
+"Plug 'roxma/nvim-cm-racer'
 Plug 'joshdick/onedark.vim'
 Plug 'w0rp/ale'
 Plug 'vim-airline/vim-airline'
@@ -42,6 +42,8 @@ Plug 'junegunn/fzf.vim'
 Plug 'thaerkh/vim-workspace'
 Plug 'Shougo/vimfiler.vim'
 Plug 'Shougo/unite.vim'
+Plug 'autozimu/LanguageClient-neovim', {'tag': 'binary-*-x86_64-unknown-linux-musl' }
+"Plug 'neomake/neomake'
 call plug#end()
 "}}}
 
@@ -65,6 +67,7 @@ set wrap                                                                        
 set linebreak                                                                   "Wrap lines at convenient points
 set listchars=tab:\ \ ,trail:·                                                  "Set trails for tabs and spaces
 set list                                                                        "Enable listchars
+set hidden
 set lazyredraw                                                                  "Do not redraw on registers and macros
 set background=dark                                                             "Set background to dark
 set hidden                                                                      "Hide buffers in background
@@ -102,7 +105,6 @@ set expandtab
 set smartindent
 set nofoldenable
 
-
 " }}}
 " ================ Auto commands ====================== {{{
 
@@ -130,15 +132,44 @@ set wildignore+=log/**
 set wildignore+=tmp/**
 set wildignore+=*.png,*.jpg,*.gif
 
-"Ale
-let g:ale_linters = {'rust': ['cargo']}
+" ================ Ale =============================== {{{
+let g:ale_linters = {'rust': ['rls', 'cargo']}
+let g:ale_rust_cargo_use_check = 1 
 let g:ale_sign_column_always = 1
-let g:ale_sign_error = 'E'
-let g:ale_sign_warning = 'W'
+let g:ale_sign_error = '✖'
+let g:ale_sign_warning = '⚠'
+let g:ale_echo_msg_error_str = 'Error'
+let g:ale_echo_msg_format = '%s'
+let g:ale_echo_msg_warning_str = 'Warning'
 let g:airline#extensions#ale#enabled = 1
 let g:ale_open_list = 0
 let g:ale_set_loclist = 1
-" }}}
+let g:ale_set_highlights = 1
+let g:ale_set_signs = 1
+"let g:neomake_open_list = 2
+"let g:neomake_highlight_lines = 1
+"call neomake#configure#automake('w')
+" let g:neomake_error_sign = {'text': '✖', 'texthl': 'NeomakeErrorSign'}
+"     let g:neomake_warning_sign = {
+"         \   'text': '⚠',
+"         \   'texthl': 'NeomakeWarningSign',
+"         \ }
+"     let g:neomake_message_sign = {
+"          \   'text': '➤',
+"          \   'texthl': 'NeomakeMessageSign',
+"          \ }
+"     let g:neomake_info_sign = {'text': 'ℹ', 'texthl': 'NeomakeInfoSign'}
+let g:LanguageClient_serverCommands = {
+    \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
+    \ 'javascript': ['javascript-typescript-stdio'],
+    \ }
+let g:LanguageClient_selectionUI = 'fzf'
+let g:LanguageClient_diagnosticsList = 'Location'
+
+nnoremap <silent> K :call LanguageClient_textDocument_hover()<CR>
+nnoremap <silent> gd :call LanguageClient_textDocument_definition()<CR>
+nnoremap <silent> <F2> :call LanguageClient_textDocument_rename()<CR>
+nnoremap <silent> <F3> :call LanguageClient_statusLine()<CR>
 " ================ Scrolling ======================== {{{
 
 set scrolloff=8                                                                 "Start scrolling when we're 8 lines away from margins
@@ -171,17 +202,19 @@ nnoremap <leader>s :ToggleWorkspace<CR>
 " ================ DelimitMate ==================== {{{
 let delimitMate_expand_cr = 1
 let delimitMate_expand_space=1
+let b:delimitMate_quotes = "\" `"
 augroup mydelimitMate
   au!
   au FileType markdown let b:delimitMate_nesting_quotes = ["`"]
-  au FileType tex let b:delimitMate_quotes = ""
-  au FileType tex let b:delimitMate_matchpairs = "(:),[:],{:},`:'"
+"  au FileType tex let b:delimitMate_quotes = ""
+  au FileType tex let b:delimitMate_matchpairs = "(:),[:],{:}"
+  "au FileType tex let b:delimitMate_matchpairs = "(:),[:],{:},`:'"
   au FileType python let b:delimitMate_nesting_quotes = ['"', "'"]
   au FileType vim,html let b:delimitMate_matchpairs = "(:),[:],{:}"
 augroup END
 
 " ================= Tagbar ======================== {{{
-nmap <silent> <leader>b :TagbarToggle<CR>
+nmap <silent> <leader>tag :TagbarToggle<CR>
 let g:tagbar_autofocus = 1
 let g:tagbar_autoclose = 1
 " Uncomment to open tagbar automatically whenever possible
@@ -233,6 +266,10 @@ command! -bang -nargs=* Rg
   \   <bang>0 ? fzf#vim#with_preview('up:60%')
   \           : fzf#vim#with_preview('right:50%'),
   \   <bang>0)
+
+command! -bang -nargs=* GGrep
+  \ call fzf#vim#grep('git grep --line-number '.shellescape(<q-args>), 0, <bang>0)
+
 "
 " Customize fzf colors to match your color scheme
 let g:fzf_colors =
@@ -249,5 +286,12 @@ let g:fzf_colors =
   \ 'spinner': ['fg', 'Label'],
   \ 'header':  ['fg', 'Comment'] }
 
-
+" Key mappings
+nmap <silent> <leader>b :Buffers<CR>
+nmap <silent> <leader>f :Files<CR>
+nmap <silent> <leader>loc :Locate ""<CR>
+nmap <silent> <leader>hst :History<CR>
+nmap <silent> <leader>com :Commits<CR>
+nmap <silent> <leader>bcom :BCommits<CR>
+nmap <silent> <leader>rg :Rg<CR>
 
