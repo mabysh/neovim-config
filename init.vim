@@ -154,7 +154,8 @@ let g:LanguageClient_selectionUI = 'fzf'
 let g:LanguageClient_diagnosticsList = 'Location'
 let g:LanguageClient_windowLogMessageLevel = "Info"
 let g:LanguageClient_loggingLevel = 'INFO'
-
+let g:LanguageClient_diagnosticsEnable = 0
+let g:LanguageClient_changeThrottle = 0.5
 
 let g:LanguageClient_rootMarkers = {
         \ 'javascript': ['project.json'],
