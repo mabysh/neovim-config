@@ -17,11 +17,6 @@ nnoremap ;        <Nop>
 xnoremap ;        <Nop>
 nnoremap m        <Nop>
 xnoremap m 	  <Nop>
-nmap <C-h> :bp<CR>
-nmap <C-l> :bn<CR>
-nmap <C-x> :bd<CR>
-nmap <C-n> :VimFilerExplorer<CR>
-
 " Plugins ==================== {{{
 call plug#begin( '~/.config/nvim/bundle')
 
@@ -43,7 +38,6 @@ Plug 'thaerkh/vim-workspace'
 Plug 'Shougo/vimfiler.vim'
 Plug 'Shougo/unite.vim'
 Plug 'autozimu/LanguageClient-neovim', {'tag': 'binary-*-x86_64-unknown-linux-musl' }
-"Plug 'neomake/neomake'
 call plug#end()
 "}}}
 
@@ -136,8 +130,8 @@ set wildignore+=*.png,*.jpg,*.gif
 let g:ale_linters = {'rust': ['cargo']}
 let g:ale_rust_cargo_use_check = 1
 let g:ale_sign_column_always = 1
-let g:ale_sign_error = '✖'
-let g:ale_sign_warning = '⚠'
+let g:ale_sign_error = '>>'
+let g:ale_sign_warning = '--'
 let g:ale_echo_msg_error_str = 'Error'
 let g:ale_echo_msg_format = '%s'
 let g:ale_echo_msg_warning_str = 'Warning'
@@ -188,9 +182,31 @@ let g:airline#extensions#tabline#left_alt_sep = '|'
 let g:airline_theme='onedark'
 let g:airline#extensions#hunks#non_zero_only = 1
 let g:airline#extensions#tabline#fnamemod = ':t'
+let g:airline_powerline_fonts = 1
+
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+endif
+
+"unicode symbols
+let g:airline_left_sep = '»'
+let g:airline_left_sep = '▶'
+let g:airline_right_sep = '«'
+let g:airline_right_sep = '◀'
+let g:airline_symbols.paste = 'ρ'
+let g:airline_symbols.whitespace = 'Ξ'
+
+" airline symbols
+let g:airline_left_sep = ''
+let g:airline_left_alt_sep = ''
+let g:airline_right_sep = ''
+let g:airline_right_alt_sep = ''
+let g:airline_symbols.branch = ''
+let g:airline_symbols.readonly = ''
+let g:airline_symbols.linenr = ''
 
 " ================ Workspace ====================== {{{
-nnoremap <leader>s :ToggleWorkspace<CR>
+let g:workspace_autocreate =1
 
 " ================ VimFiler ======================= {{{
 :let g:vimfiler_as_default_explorer = 1
@@ -283,11 +299,38 @@ let g:fzf_colors =
   \ 'header':  ['fg', 'Comment'] }
 
 " Key mappings
-nmap <silent> <leader>b :Buffers<CR>
-nmap <silent> <leader>f :Files<CR>
-nmap <silent> <leader>loc :Locate ""<CR>
-nmap <silent> <leader>hst :History<CR>
-nmap <silent> <leader>com :Commits<CR>
-nmap <silent> <leader>bcom :BCommits<CR>
-nmap <silent> <leader>rg :Rg<CR>
+"===================== KEY MAPPINGS =================== {{{
+" Buffer mappings:
+" List buffers:
+nmap <silent> <leader>bb :Buffers<CR>
+" Buffer commits
+nmap <silent> <leader>bc :BCommits<CR>
+" Grep buffer:
+nmap <silent> <leader>b/ :BLines<CR>
+" Buffer tags:
+nmap <silent> <leader>bt :BTags<CR>
+" Next buffer:
+nmap <silent> <leader>bn :bn<CR>
+" Previous buffer:
+nmap <silent> <leader>bp :bp<CR>
+" Kill buffer
+nmap <silent> <leader>bd :bd<CR>
+
+" Project mappings:
+" Project files:
+nmap <silent> <leader>pf :Files<CR>
+" Project commits:
+nmap <silent> <leader>pc :Commits<CR>
+" Grep project
+nmap <silent> <leader>p/ :Rg<CR>
+" Project tags
+nmap <silent> <leader>pt :Tags<CR>
+
+"Files mappings:
+" Locate
+nmap <silent> <leader>fl :Locate ""<CR>
+" History
+nmap <silent> <leader>fh :History<CR>
+" Toggle vim filer
+nmap <silent> <leader>ft :VimFilerExplorer<CR>
 
