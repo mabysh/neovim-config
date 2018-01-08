@@ -334,3 +334,6 @@ nmap <silent> <leader>fh :History<CR>
 " Toggle vim filer
 nmap <silent> <leader>ft :VimFilerExplorer<CR>
 
+" Commands
+nmap <silent> <leader>; :Commands<CR>
+
