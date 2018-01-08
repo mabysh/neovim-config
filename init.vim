@@ -336,4 +336,5 @@ nmap <silent> <leader>ft :VimFilerExplorer<CR>
 
 " Commands
 nmap <silent> <leader>; :Commands<CR>
+nmap ; :
 
